@@ -21,6 +21,27 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
         <title>Crypto analysis</title>
 
+        <!-- Set cookie button -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+          	document.getElementById('add_crypto').addEventListener('click', function () {
+
+          		if (document.cookie.includes('crypto')) {
+          			let x = document.cookie;
+          			x.replace('cryptos=', '');
+
+          			let c = document.getElementById('crypto').value;
+          			document.setCookie('cryptos', x + ',' + c);
+          		}
+
+          		else {
+          			let d = document.getElementById('crypto').value;
+          			document.cookie = "cryptos=" + d;
+          		}
+          	})
+          });
+        </script>
+
     </head>
 
     <body>

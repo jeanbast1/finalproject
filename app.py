@@ -20,35 +20,54 @@ def after_request(response):
 
 url = 'https://api.kraken.com/0/public/OHLC?pair='
 
+# function to connect database and execute query
+def get_db_data(query):
+    con = sqlite3.connect('cryptos.db')
+    db = con.cursor()
+    data = db.execute(query)
+    db.commit()
+    db.close()
+    return data.fetchall()
+
 @app.route('/', methods=['POST', 'GET'])
 def get_crypto_data():
 
-    con = sqlite3.connect('cryptos.db')
-    db = con.cursor()
+    # change selected crypto status in database
+    if request.method == "POST" and request.form.name == "add_crypto":
+        crypto_to_add = request.cookies.get('crypto')
+        query = "UPDATE selected FROM crypto_selected WHERE name = ? VALUES (?), " + "True"
+        get_db_data(query)
 
-    if request.method == "POST":
-        crypto = request.form.get("cryptos")
-        resp = requests.get(url + crypto + 'EUR&interval=1440&since=1641859200').json()
-        result = resp['result']
+    # update start date
+    elif request.method == "POST" and request.form.name == "change_date":
+        year = request.form.get("year")
+        month = request.form.get("month")
+        day = request.form.get("day")
+        query = "UPDATE year, month, day FROM date_selected VALUES (?,?,?), " + year + "," + month + "," + day
+        get_db_data(query)
 
-        print(result)
-        # iterate through keys of result
-        for key in result:
-            # if key is crypto-currency pair
-            if crypto in key:
-                # iterate through key values and create data dict
-                result = result[key]
-                for tstamps in result:
-                    stamp = datetime.fromtimestamp(tstamps[0])
+    # get graph data from database
+    elif request.method == "GET":
+
+        query_crypto = "SELECT crypto FROM crypto_selected WHERE selected = True"
+        cryptos = get_db_data(query_crypto)
+        query_date = "SELECT year, month, day FROM date_selected"
+        date = get_db_data(query_date)
+
+        #get historical values data
+        cryptos_data = {}
+        for crypto in cryptos:
+            query = "SELECT value FROM crypto_data WHERE crypto = ? AND year >= ? AND month >= ? AND day >= ?", crypto , date
+            crypto_data = get_db_data(query)
+            => Add data to dict
+
+
+
+'''
+        datetime.fromtimestamp(tstamps[0])
                     print(stamp)
-                    db.execute("INSERT INTO cryptos (key, year, month, day, value) VALUES (?,?,?,?,?)", (int(str(stamp.year)+str(stamp.month)+str(stamp.day)), int(stamp.year), int(stamp.month), int(stamp.day), float(tstamps[1])))
-                    # dates.append(stamp)
-                    # prices.append(float(date[1]))
-                    con.commit()
-        crypto_data = db.execute("SELECT * FROM cryptos")
-        for row in crypto_data:
-            print(row)
 
-        return render_template('index.html', crypto_data=crypto_data)
-    else:
-        return render_template("index.html")
+        crypto_data = db.execute("SELECT * FROM cryptos").fetchall()
+'''
+
+    return render_template('index.html', cryptos_data=cryptos_data)
