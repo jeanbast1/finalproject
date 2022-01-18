@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request
 import requests
-from datetime import datetime
+import time
+import datetime
 import sqlite3
-
-# db.execute("CREATE TABLE IF NOT EXISTS crypto_data (year integer, month integer, day integer, value real)")
 
 app = Flask(__name__)
 
@@ -20,25 +19,56 @@ def after_request(response):
 
 url = 'https://api.kraken.com/0/public/OHLC?pair='
 
-# function to connect database and execute query
-def get_db_data(query):
-    con = sqlite3.connect('cryptos.db')
-    db = con.cursor()
-    data = db.execute(query)
-    db.commit()
-    db.close()
-    return data.fetchall()
 
 @app.route('/', methods=['POST', 'GET'])
 def get_crypto_data():
 
-    # change selected crypto status in database
-    if request.method == "POST" and request.form.name == "add_crypto":
-        crypto_to_add = request.cookies.get('crypto')
-        query = "UPDATE selected FROM crypto_selected WHERE name = ? VALUES (?), " + "True"
-        get_db_data(query)
+    # connect database
+    con = sqlite3.connect('cryptodatabase.db')
+    con.row_factory = lambda cursor, row: row[0]
+    db = con.cursor()
 
-    # update start date
+    # change selected crypto status in database
+    if request.method == 'POST' and "form1" in request.form:
+        crypto_to_add = request.form.get('crypto')
+        db.execute("UPDATE crypto_selected SET selected = 1 WHERE symbol = ?;", [crypto_to_add])
+
+    # change selected startdate in database
+    if request.method == 'POST' and "form2" in request.form:
+        date = request.form.get('date')
+        date_unix = (int(time.mktime(datetime.datetime.strptime(date, "%Y-%m-%d").timetuple())) + 3600) * 1000
+        print(date_unix)
+        db.execute("UPDATE date_selected SET date = ?, unix = ?", (date, date_unix))
+
+    # change selected crypto status in database
+    if request.method == 'GET':
+        selected_cryptos = []
+        values = {}
+        qcryptos = db.execute("SELECT symbol FROM crypto_selected WHERE selected = 1")
+        for row in qcryptos:
+            selected_cryptos.append(row)
+        qdate = db.execute("SELECT date FROM date_selected")
+        for row in qdate:
+            date_selected = row
+        date_unix = (int(time.mktime(datetime.datetime.strptime(date_selected, "%Y-%m-%d").timetuple())) + 3600) * 1000
+
+        for crypto in selected_cryptos:
+            values[crypto] = []
+            qdata = db.execute("SELECT value FROM crypto_data WHERE unix >= ? AND symbol = ? ORDER BY unix LIMIT 5", (date_unix, crypto))
+            for row in qdata:
+                values[crypto].append(row)
+
+
+        return render_template('index.html', values=values, date_selected=date_selected, selected_cryptos=selected_cryptos)
+
+    # disconnect database
+    con.commit()
+    con.close()
+
+    return render_template('index.html')
+
+
+'''    # update start date
     elif request.method == "POST" and request.form.name == "change_date":
         year = request.form.get("year")
         month = request.form.get("month")
@@ -59,15 +89,10 @@ def get_crypto_data():
         for crypto in cryptos:
             query = "SELECT value FROM crypto_data WHERE crypto = ? AND year >= ? AND month >= ? AND day >= ?", crypto , date
             crypto_data = get_db_data(query)
-            => Add data to dict
 
 
-
-'''
         datetime.fromtimestamp(tstamps[0])
                     print(stamp)
 
         crypto_data = db.execute("SELECT * FROM cryptos").fetchall()
 '''
-
-    return render_template('index.html', cryptos_data=cryptos_data)

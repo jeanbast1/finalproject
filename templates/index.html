@@ -4,69 +4,63 @@
 <div class="section">
 
         <h2>My analysis</h2>
-        <form>
+        <form action="/" method="POST" name="crypto_select">
+          <input type="hidden" name="form1">
             <select name="crypto" id="crypto">
                 <option disabled selected>--Select crypto to analyze--</option>
                 <option value="BTC">BTC</option>
                 <option value="ETH">ETH</option>
                 <option value="UNI">UNI</option>
             </select>
-            <button id="add_crypto" class="btn btn-primary">Add</button>
+            <button name="crypto_select">Add</button>
         </form>
 
-        <canvas id="chart" width="600" height="400"></canvas>
+        <form action="/" method="POST" name="date_select">
+            <input type="hidden" name="form2">
+            <input type="date" name="date" id="date" min="2018-01-01"></input>
+            <button name="date_select">Add</button>
+        </form>
+
+        {% for crypto in selected_cryptos %}
+        <p> {{ crypto }} </p>
+        {% endfor %}
+
+        <p> {{ date_selected }} </p>
+
+        <div>
+          <canvas id="chart" width="400" height="400"></canvas>
+        </div>
+
+
+
+
         <script>
-
-            // bar chart data
-            var lineData = {
-                labels : ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
-
-                datasets : [{
-                    fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(151,187,205,1)",
-                    bezierCurve : false,
-                    data : [
-                    {% for price in prices %}
-                        {{ price }},
-                        {% endfor %}]
+            const ctx = document.getElementById('chart').getContext('2d');
+            {% for row in values %}
+              var row = []
+              {% for value in row %}
+                row.append(value)
+              {% endfor %}
+            {% endfor %}
+            const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['1', '2', '3', '4', '5', '6'],
+              datasets: [{
+                {% for row in values %}
+                  label: {{ row }}
+                  data: row
+                {% endfor %}
+              }],
+            },
+            options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
-                ]
-            }
-
-            Chart.defaults.global.animationSteps = 50;
-            Chart.defaults.global.tooltipYPadding = 16;
-            Chart.defaults.global.tooltipCornerRadius = 0;
-            Chart.defaults.global.tooltipTitleFontStyle = "normal";
-            Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
-            Chart.defaults.global.animationEasing = "easeOutBounce";
-            Chart.defaults.global.responsive = false;
-            Chart.defaults.global.scaleLineColor = "black";
-            Chart.defaults.global.scaleFontSize = 16;
-
-            // get bar chart canvas
-            var mychart = document.getElementById("chart").getContext("2d");
-
-            steps = 10
-            max = 70000
-
-            // draw bar chart
-            var LineChartDemo = new Chart(mychart).Line(lineData, {
-                type: 'line',
-                scaleOverride: true,
-                scaleSteps: steps,
-                scaleStepWidth: Math.ceil(max / steps),
-                scaleStartValue: 0,
-                scaleShowVerticalLines: true,
-                scaleShowGridLines : true,
-                barShowStroke : true,
-                scaleShowLabels: true,
-                bezierCurve: false,
+                }
             });
-
         </script>
 </div>
 {% endblock %}
