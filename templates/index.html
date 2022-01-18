@@ -31,36 +31,32 @@
           <canvas id="chart" width="400" height="400"></canvas>
         </div>
 
-
+        {% for row in values %}
+          <p>
+          {{ values[row]|safe }}
+          </p>
+        {% endfor %}
 
 
         <script>
-            const ctx = document.getElementById('chart').getContext('2d');
-            {% for row in values %}
-              var row = []
-              {% for value in row %}
-                row.append(value)
-              {% endfor %}
-            {% endfor %}
-            const myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: ['1', '2', '3', '4', '5', '6'],
-              datasets: [{
-                {% for row in values %}
-                  label: {{ row }}
-                  data: row
-                {% endfor %}
-              }],
-            },
-            options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
+          const ctx = document.getElementById('chart').getContext('2d');
+          const myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: {{ timestamps|safe }},
+                  datasets: [
+                    {% for row in values %}
+                     {
+                      label: '{{ row }}',
+                      data: {{ values[row]|safe }},
+                      borderWidth: 1
+                    },
+                    {% endfor %}
+                  ]
+              },
+              options: {
+              }
+          });
         </script>
 </div>
 {% endblock %}

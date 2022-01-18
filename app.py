@@ -54,45 +54,23 @@ def get_crypto_data():
 
         for crypto in selected_cryptos:
             values[crypto] = []
-            qdata = db.execute("SELECT value FROM crypto_data WHERE unix >= ? AND symbol = ? ORDER BY unix LIMIT 5", (date_unix, crypto))
-            for row in qdata:
-                values[crypto].append(row)
+            qdata = db.execute("SELECT value FROM crypto_data WHERE unix >= ? AND symbol = ? ORDER BY unix", (date_unix, crypto))
+            for x in qdata:
+                values[crypto].append(x)
+            startvalue = values[crypto][0]
+            values[crypto][0] = 100
+            for y in range(1, len(values[crypto])):
+                values[crypto][y] = 100 * values[crypto][y] / startvalue
 
+        timestamps = []
+        qdata = db.execute("SELECT DISTINCT date FROM crypto_data WHERE unix >= ? ORDER BY unix", [date_unix])
+        for timestamp in qdata:
+            timestamps.append(timestamp)
 
-        return render_template('index.html', values=values, date_selected=date_selected, selected_cryptos=selected_cryptos)
+        return render_template('index.html', timestamps=timestamps, values=values, date_selected=date_selected, selected_cryptos=selected_cryptos)
 
     # disconnect database
     con.commit()
     con.close()
 
     return render_template('index.html')
-
-
-'''    # update start date
-    elif request.method == "POST" and request.form.name == "change_date":
-        year = request.form.get("year")
-        month = request.form.get("month")
-        day = request.form.get("day")
-        query = "UPDATE year, month, day FROM date_selected VALUES (?,?,?), " + year + "," + month + "," + day
-        get_db_data(query)
-
-    # get graph data from database
-    elif request.method == "GET":
-
-        query_crypto = "SELECT crypto FROM crypto_selected WHERE selected = True"
-        cryptos = get_db_data(query_crypto)
-        query_date = "SELECT year, month, day FROM date_selected"
-        date = get_db_data(query_date)
-
-        #get historical values data
-        cryptos_data = {}
-        for crypto in cryptos:
-            query = "SELECT value FROM crypto_data WHERE crypto = ? AND year >= ? AND month >= ? AND day >= ?", crypto , date
-            crypto_data = get_db_data(query)
-
-
-        datetime.fromtimestamp(tstamps[0])
-                    print(stamp)
-
-        crypto_data = db.execute("SELECT * FROM cryptos").fetchall()
-'''
