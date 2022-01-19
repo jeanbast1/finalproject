@@ -20,54 +20,16 @@
         <!-- Chart.js -->
         <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js'></script>
 
-        <!-- Set cookie button -->
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-          	document.getElementById('add_crypto').addEventListener('click', function () {
-
-          		if (document.cookie.includes('crypto')) {
-          			let x = document.cookie;
-          			x.replace('cryptos=', '');
-
-          			let c = document.getElementById('crypto').value;
-          			document.setCookie('cryptos', x + ',' + c);
-          		}
-
-          		else {
-          			let d = document.getElementById('crypto').value;
-          			document.cookie = "cryptos=" + d;
-          		}
-          	})
-          });
-        </script>
-
     </head>
 
     <body>
 
-        <nav class="navbar navbar-expand-md navbar-light bg-light border">
-            <a class="navbar-brand" href="/"><span class="blue">C</span><span class="red">$</span><span class="yellow">5</span><span class="green">0</span> <span class="red">Finance</span></a>
-            <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbar">
-                    <ul class="navbar-nav mr-auto mt-2">
-                        <li class="nav-item"><a class="nav-link" href="/quote">Quote</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/buy">Buy</a></li>
-                    </ul>
-                    <ul class="navbar-nav ml-auto mt-2">
-                        <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/changepass">Change password</a></li>
-                    </ul>
-            </div>
-        </nav>
-
-        <main class="container p-5">
+        <main class="container-fluid">
             {% block main %}{% endblock %}
         </main>
 
         <footer class="small text-center text-muted">
-            Data provided for free by <a href="https://docs.kraken.com/rest/">Kraken.com</a>.
+            Data provided for free by <a href="https://www.cryptodatadownload.com/data/binance/">Cryptodatadownload.com</a>.
         </footer>
 
     </body>

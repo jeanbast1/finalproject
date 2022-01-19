@@ -1,62 +1,76 @@
 {% extends "layout.html" %}
 
 {% block main %}
-<div class="section">
-
-        <h2>My analysis</h2>
+<div class="container-fluid">
+  <div class="row">
+      <div class="col-3">
+        <h2>Crypto price evolution</h2>
         <form action="/" method="POST" name="crypto_select">
           <input type="hidden" name="form1">
-            <select name="crypto" id="crypto">
-                <option disabled selected>--Select crypto to analyze--</option>
-                <option value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
-                <option value="UNI">UNI</option>
-            </select>
-            <button name="crypto_select">Add</button>
+          <label class="form-label">Add crypto to analyze</label>
+          <select class="form-select form-select-sm" name="crypto" id="crypto">
+              <option disabled selected>--Select crypto--</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+              <option value="UNI">UNI</option>
+              <option value="LTC">LTC</option>
+              <option value="LINK">LINK</option>
+              <option value="XRP">XRP</option>
+              <option value="ADA">ADA</option>
+              <option value="SOL">SOL</option>
+              <option value="DOT">DOT</option>
+          </select>
+          <button type="submit" class="btn btn-primary" name="crypto_select">Add</button>
         </form>
+        <p>Cryptos already selected:</p>
+        {% for crypto in selected_cryptos %}
+        <p id="{{ crypto }}">{{ crypto }}</p>
+        <form action="/" method="POST" name="crypto_unselect">
+          <input type="hidden" name="form3">
+          <input type="hidden" name="crypto_to_unselect" value="{{ crypto }}">
+          <input type="image" name="crypto_unselect" src="/static/001-fermer.png">
+        </form>
+        {% endfor %}
 
         <form action="/" method="POST" name="date_select">
             <input type="hidden" name="form2">
-            <input type="date" name="date" id="date" min="2018-01-01"></input>
-            <button name="date_select">Add</button>
+            <label class="form-label">Select analysis start date</label>
+            <input class="form-control" type="date" name="date" id="date" min="2018-01-01"></input>
+            <button type="submit" class="btn btn-primary" name="date_select">Add</button>
         </form>
 
-        {% for crypto in selected_cryptos %}
-        <p> {{ crypto }} </p>
-        {% endfor %}
+      </div>
+      <div class="col-9">
 
-        <p> {{ date_selected }} </p>
+        <p>Start date: {{ date_selected }}</p>
+            <div>
+              <canvas id="chart"></canvas>
+            </div>
 
-        <div>
-          <canvas id="chart" width="400" height="400"></canvas>
+            <script>
+              const ctx = document.getElementById('chart').getContext('2d');
+              const myChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: {{ timestamps|safe }},
+                      datasets: [
+                        {% for row in values %}
+                         {
+                          label: '{{ row }}',
+                          data: {{ values[row]|safe }},
+                          tension: 0.1,
+                          backgroundColor: "{{ colors[row] }}",
+                          borderColor: "{{ colors[row] }}",
+                          borderWidth: 1
+                        },
+                        {% endfor %}
+                      ],
+                  },
+                  options: {
+                  }
+              });
+            </script>
         </div>
-
-        {% for row in values %}
-          <p>
-          {{ values[row]|safe }}
-          </p>
-        {% endfor %}
-
-
-        <script>
-          const ctx = document.getElementById('chart').getContext('2d');
-          const myChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                  labels: {{ timestamps|safe }},
-                  datasets: [
-                    {% for row in values %}
-                     {
-                      label: '{{ row }}',
-                      data: {{ values[row]|safe }},
-                      borderWidth: 1
-                    },
-                    {% endfor %}
-                  ]
-              },
-              options: {
-              }
-          });
-        </script>
+    </div>
 </div>
 {% endblock %}
