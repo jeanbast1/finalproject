@@ -25,12 +25,14 @@
         <p>Cryptos already selected:</p>
         <div>
         {% for crypto in selected_cryptos %}
-          <span id="cryptosymbol">{{ crypto }}</span>
-          <form action="/" method="POST" name="crypto_unselect" class="form_remove">
-            <input type="hidden" name="form3">
-            <input type="hidden" name="crypto_to_unselect" value="{{ crypto }}">
-            <input type="image" id="delete_image" name="crypto_unselect" src="/static/001-fermer.png">
-          </form>
+          <div>
+            <span id="cryptosymbol">{{ crypto }}</span>
+            <form action="/" method="POST" name="crypto_unselect" class="form_remove">
+              <input type="hidden" name="form3">
+              <input type="hidden" name="crypto_to_unselect" value="{{ crypto }}">
+              <input type="image" id="delete_image" name="crypto_unselect" src="/static/001-fermer.png">
+            </form>
+          </div>
         {% endfor %}
         </div>
 
@@ -44,9 +46,9 @@
       </div>
       <div id="right-column" class="col-9">
 
-        <p class="p-centered">Start date: {{ date_selected }}</p>
+        <p class="p-centered">Asset value vs. USD</p>
             <div>
-              <canvas id="chart"></canvas>
+                <canvas id="chart"></canvas>
             </div>
 
             <script>
@@ -66,6 +68,14 @@
                           borderWidth: 1
                         },
                         {% endfor %}
+                        {
+                          label: 'EUR',
+                          data: {{ EURvalues|safe }},
+                          tension: 0.3,
+                          backgroundColor: "#146dba",
+                          borderColor: "#146dba",
+                          borderWidth: 1
+                        }
                       ],
                   },
                   options: {
