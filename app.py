@@ -25,7 +25,7 @@ def get_crypto_data():
     con.row_factory = lambda cursor, row: row[0]
     db = con.cursor()
 
-    # change selected crypto status in database
+    # mark crypto as selected in database
     if request.method == 'POST' and "form1" in request.form:
         crypto_to_add = request.form.get('crypto')
         db.execute("UPDATE crypto_selected SET selected = 1 WHERE symbol = ?;", [crypto_to_add])
@@ -33,7 +33,7 @@ def get_crypto_data():
         con.close()
         return redirect("/")
 
-    # change selected crypto status in database
+    # remove selected crypto status in database
     if request.method == 'POST' and "form3" in request.form:
         crypto_to_remove = request.form.get('crypto_to_unselect')
         db.execute("UPDATE crypto_selected SET selected = 0 WHERE symbol = ?;", [crypto_to_remove])
@@ -44,7 +44,9 @@ def get_crypto_data():
     # change selected startdate in database
     if request.method == 'POST' and "form2" in request.form:
         date = request.form.get('date')
-        date_unix = int(time.mktime(datetime.datetime.strptime(date, "%Y-%m-%d").timetuple()))
+        date_unix = int(time.mktime(datetime.datetime.strptime(date, "%Y-%m-%d").timetuple())) + 3600
+        if date_unix >= 1585526400 and date_unix < 1603670400:
+            date_unix = date_unix + 3600
         db.execute("UPDATE dates SET selected = 0")
         con.commit()
         db.execute("UPDATE dates SET selected = 1 WHERE unix = ?", [date_unix])
@@ -55,7 +57,7 @@ def get_crypto_data():
     # prep data for render
     if request.method == 'GET':
         selected_cryptos = []
-        values = {}
+        date_unix = 0
         qcryptos = db.execute("SELECT symbol FROM crypto_selected WHERE selected = 1")
         for row in qcryptos:
             selected_cryptos.append(row)
@@ -70,13 +72,27 @@ def get_crypto_data():
             timestamps.append(timestamp)
 
         # add the values and rebase values to 100
+        values = {}
         for crypto in selected_cryptos:
             values[crypto] = []
             qdata = db.execute("SELECT value FROM crypto_data WHERE date_unix >= ? AND symbol = ? ORDER BY date_unix", (date_unix, crypto))
+
+            # count number of values
+            count = 0
+            for row in qdata:
+                count = count + 1
+
+            missing_values = len(timestamps) - count
+
+            if missing_values > 0:
+                for i in range(timestamps - count):
+                    values[crypto].append(100)
+
+            qdata = db.execute("SELECT value FROM crypto_data WHERE date_unix >= ? AND symbol = ? ORDER BY date_unix", (date_unix, crypto))
             for x in qdata:
                 values[crypto].append(x)
-            startvalue = values[crypto][0]
-            values[crypto][0] = 100
+            startvalue = values[crypto][0 + missing_values]
+            values[crypto][0 + missing_values] = 100
             for y in range(1, len(values[crypto])):
                 values[crypto][y] = 100 * values[crypto][y] / startvalue
 
@@ -90,7 +106,7 @@ def get_crypto_data():
         for y in range(1, len(EURvalues)):
             EURvalues[y] = 100 * EURvalues[y] / startvalue
 
-        colors = {'BTC': '#F0544F', 'ETH': '#92DCE5', 'ADA': '#291F1E', 'LTC': '#1C6E8C', 'UNI': '#274156', 'LINK': '#FBB13C', 'XRP': '#1B998B', 'SOL': '#09BC8A', 'DOT': '#C2E812'};
+        colors = {'BTC': '#F0544F', 'ETH': '#92DCE5', 'ADA': '#291F1E', 'LTC': '#1C6E8C', 'UNI': '#274156', 'LINK': '#FBB13C', 'XRP': '#1B998B', 'SOL': '#09BC8A', 'ATOM': '#C2E812'};
         con.commit()
         con.close()
 

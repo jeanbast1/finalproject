@@ -37,7 +37,7 @@
         <form action="/" method="POST" name="date_select">
             <input type="hidden" name="form2">
             <label class="form-label">Select analysis start date <br> <i><span style="color: grey">(currently: {{ timestamps[0] }})<span></i></label>
-            <input class="form-control" type="date" name="date" id="date" min="2018-01-01"></input>
+            <input class="form-control" type="date" name="date" id="date" max="2021-12-31" min="2020-01-01"></input>
             <button type="submit" class="btn btn-primary" name="date_select">Change</button>
         </form>
 
