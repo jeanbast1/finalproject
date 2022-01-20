@@ -7,7 +7,7 @@
 
 #cryptosymbol {
   display: inline;
-  color: #1B998B;
+  color: grey;
 }
 
 #left-column {
@@ -15,9 +15,21 @@
 }
 
 #right-column {
-  margin-top: 50px;
+  margin-top: 40px;
 }
 
+.small.text-center.text-muted {
+  margin-top: 40px;
+}
+
+.div-flex-middle {
+  margin-top: 10px;
+  display:flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  align-content: stretch;
+  justify-content: space-between;
+}
 
 .btn {
   background-color: #274156;
