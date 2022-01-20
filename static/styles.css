@@ -1,0 +1,51 @@
+
+#delete_image {
+  width: 15px;
+  height: 15px;
+  display: inline;
+}
+
+#cryptosymbol {
+  display: inline;
+  color: #1B998B;
+}
+
+#left-column {
+  margin-top: 50px;
+}
+
+#right-column {
+  margin-top: 50px;
+}
+
+
+.btn {
+  background-color: #274156;
+  border: 0px;
+  min-height: 38px;
+  margin-bottom: 3px;
+}
+
+.form_remove {
+  display: inline;
+  margin-right: 20px;
+}
+
+p {
+  margin-bottom: 0px;
+  margin-top: 20px;
+}
+
+.p-centered {
+  text-align: center;
+}
+
+label {
+  margin-top: 20px;
+  display: block;
+}
+
+.form-control {
+  max-width: 200px;
+  display: inline-block;
+}
