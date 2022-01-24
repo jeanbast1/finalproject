@@ -15,8 +15,13 @@
               <option value="LTC">LTC</option>
               <option value="LINK">LINK</option>
               <option value="XRP">XRP</option>
+              <option value="SHIB">SHIB</option>
               <option value="ADA">ADA</option>
               <option value="ATOM">ATOM</option>
+              <option value="DOT">DOT</option>
+              <option value="DOGE">DOGE</option>
+              <option value="SOL">SOL</option>
+              <option value="UNI">UNI</option>
           </select>
           <button type="submit" class="btn btn-primary" name="crypto_select">Add</button>
         </form>
@@ -37,7 +42,7 @@
         <form action="/" method="POST" name="date_select">
             <input type="hidden" name="form2">
             <label class="form-label">Select analysis start date <br> <i><span style="color: grey">(currently: {{ timestamps[0] }})<span></i></label>
-            <input class="form-control" type="date" name="date" id="date" max="2021-12-31" min="2020-01-01"></input>
+            <input class="form-control" type="date" name="date" id="date" max="{{ max_date }}" min="2020-01-01"></input>
             <button type="submit" class="btn btn-primary" name="date_select">Change</button>
         </form>
 
@@ -66,14 +71,6 @@
                           borderWidth: 1
                         },
                         {% endfor %}
-                        {
-                          label: 'EUR',
-                          data: {{ EURvalues|safe }},
-                          tension: 0.3,
-                          backgroundColor: "#146dba",
-                          borderColor: "#146dba",
-                          borderWidth: 1
-                        }
                       ],
                   },
                   options: {
@@ -83,4 +80,8 @@
         </div>
     </div>
 </div>
+
+<footer class="small text-center text-muted">
+    Data provided for free by <a href="https://www.cryptodatadownload.com/data/binance/">Cryptodatadownload.com</a>.
+</footer>
 {% endblock %}
