@@ -18,8 +18,18 @@
   margin-top: 40px;
 }
 
+.p-nomargin {
+  margin-top: 0px;
+}
+
 .small.text-center.text-muted {
   margin-top: 40px;
+}
+
+.individual_crypto_data {
+  display: inline-block;
+  margin-right: 50px;
+  margin-left: 50px;
 }
 
 .div-flex-middle {
