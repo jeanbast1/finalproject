@@ -51,7 +51,7 @@
 
         <p class="p-centered">Asset value vs. USD</p>
             <div class="small text-center">
-                Data provided for free by <a href="https://www.cryptodatadownload.com/data/binance/">Cryptodatadownload.com</a>.
+                Data provided for free by <a href="https://docs.kraken.com/rest/">kraken.com</a>.
             </div>
             <div>
                 <canvas id="chart"></canvas>
@@ -97,7 +97,7 @@
             crypto_div.style.color = myChart.data.datasets[i].backgroundColor;
 
             let len = myChart.data.datasets[i].data.length;
-            let variation = math.round(-1 + (myChart.data.datasets[i].data[len - 1] / 100), 2) * 100;
+            let variation = math.round((-1 + (myChart.data.datasets[i].data[len - 1] / 100)) * 100, 2);
 
             let crypto_name = myChart.data.datasets[i].label;
             crypto_name = crypto_name + '_change';
